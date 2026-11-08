@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Class Attendance</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f6f8;--cd:#fff;--tx:#111;--mu:#667;--ac:#1a7f37;--bd:#d6dae0}
+@media(prefers-color-scheme:dark){:root{--bg:#14171a;--cd:#1e2226;--tx:#eee;--mu:#9aa3ab;--bd:#333a41}}
+*{box-sizing:border-box}body{margin:0;font:15px Roboto,Arial,sans-serif;background:var(--bg);color:var(--tx)}
+.ui{max-width:760px;margin:0 auto;padding:12px}
+.card{background:var(--cd);border:1px solid var(--bd);border-radius:12px;padding:12px;margin-bottom:12px}
+.g{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+label.f{display:block;font-size:12px;color:var(--mu)}
+select,input[type=date],input[type=password],button{width:100%;padding:10px;font:inherit;border-radius:8px;border:1px solid var(--bd);background:var(--cd);color:var(--tx)}
+button{cursor:pointer;font-weight:500}button.p{background:var(--ac);color:#fff;border-color:var(--ac)}
+.tabs{display:flex;gap:8px;margin-bottom:12px}.tabs button.on{background:var(--ac);color:#fff}
+.info{font-size:13px;color:var(--mu);margin-top:8px}
+.r{display:flex;align-items:center;gap:10px;padding:12px 4px;border-bottom:1px solid var(--bd);cursor:pointer}
+.r span{width:26px;color:var(--mu);font-size:13px}.r div{flex:1}.r small{display:block;color:var(--mu)}
+.r input{width:26px;height:26px;accent-color:var(--ac)}
+.bar{position:sticky;bottom:0;display:grid;grid-template-columns:1fr 1fr 2fr;gap:8px;padding:10px 0;background:var(--bg)}
+#toast{position:fixed;top:10px;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:8px 16px;border-radius:20px;display:none}
+/* ---- printable sheet (always light) ---- */
+#sheet{display:none;overflow-x:auto}
+.page{width:1123px;min-height:790px;margin:0 auto 16px;background:#fff;color:#000;padding:36px 36px 20px;font-family:Roboto,Arial,sans-serif;font-size:12.5px;position:relative}
+.hd{display:grid;grid-template-columns:1fr 1.5fr 1fr;align-items:start;margin-bottom:14px}
+.hd p{margin:0 0 7px}.hd .mid{text-align:center}.hd img{height:46px;float:left;margin:0 8px 0 -10px}
+.hd h1{font-size:18px;margin:6px 0 4px;text-decoration:underline}.hd h2{font-size:15px;margin:0;text-decoration:underline}
+table.t{border-collapse:collapse;width:100%;table-layout:fixed;border:2px solid #000}
+.t th,.t td{border:1px solid #000;height:25.5px;padding:0 4px;overflow:hidden;white-space:nowrap;text-align:center;font-size:12px}
+.t th{height:80px;font-weight:700;white-space:normal;line-height:1.15;font-size:11.5px}
+.t td.l{text-align:left}.t td.b{font-weight:700}
+.t th.d{padding:0;font-size:9px;font-weight:400}.t th.d span{writing-mode:vertical-rl;transform:rotate(180deg)}
+.ft{display:flex;justify-content:space-between;margin-top:70px;font-weight:700}
+.ft div{border-top:2px dashed #000;padding-top:8px;width:245px;text-align:center}
+.pg{position:absolute;bottom:42px;left:0;right:0;text-align:center;font-weight:700;font-size:12px}
+@page{size:A4 landscape;margin:6mm}
+@media print{body{background:#fff}.ui,#toast{display:none!important}#sheet{display:block!important;overflow:visible}
+.page{margin:0;width:100%;padding:0;page-break-after:always;min-height:190mm}.page:last-child{page-break-after:auto}}
+</style></head><body>
+<div class="ui">
+<div id="login" class="card" style="display:none;max-width:420px;margin:15vh auto"><h3 style="margin-top:0">Teacher sign-in</h3><label class="f">Teacher</label><select id="lt"></select><label class="f" style="margin-top:8px">Passcode</label><input type="password" id="pin" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()"><button class="p" style="margin-top:10px" onclick="login()">Sign in</button></div>
+<div id="app" style="display:none">
+ <div class="tabs"><button id="t1" class="on" onclick="tab(1)">Take attendance</button><button id="t2" onclick="tab(2)">Sheet / Print</button><button onclick="logout()" style="width:auto">Sign out</button></div>
+ <div class="card">
+  <div class="g">
+   <div><label class="f">Teacher</label><select id="teacher"></select></div>
+   <div><label class="f">Course</label><select id="course"></select></div>
+   <div><label class="f">Batch</label><select id="batch"></select></div>
+   <div><label class="f">Session</label><select id="session"></select></div>
+   <div><label class="f">Modality</label><select id="modality"></select></div>
+   <div><label class="f">Date</label><input type="date" id="date"></div>
+  </div>
+  <div class="info" id="info">Select course, batch, session and modality.</div>
+ </div>
+ <div id="entry"><div class="card" id="list" style="display:none"></div>
+  <div class="bar" id="bar" style="display:none"><button onclick="setAll(1)">All present</button><button onclick="setAll(0)">Clear</button><button class="p" onclick="save()">Save</button></div></div>
+ <div id="sbar" style="display:none"><button class="p" onclick="print()">Print / Save as PDF</button></div>
+</div></div>
+<div id="sheet"></div><div id="toast"></div>
+<script>
+const API='https://script.google.com/macros/s/AKfycbwzaEHECYQIUo7tVU-vY8Rji7T30aaTb3jDQV7b3YCTD2d8E9ixbfi28CdH0MLS18xjrw/exec';let S_=localStorage.getItem('s')||'';
+const $=i=>document.getElementById(i);
+const chk=r=>{if(r.error==='unauthorized'){logout(true);throw 'Session expired'}return r};
+const get=q=>fetch(API+'?'+new URLSearchParams({s:S_,...q})).then(r=>r.json()).then(chk);
+const post=b=>fetch(API,{method:'POST',body:JSON.stringify({s:S_,...b})}).then(r=>r.json()).then(chk);
+let M,D,C=new Set();
+const toast=t=>{const e=$('toast');e.textContent=t;e.style.display='block';setTimeout(()=>e.style.display='none',2200)};
+const fill=(id,a,txt)=>{$(id).innerHTML='<option value="">Select…</option>'+a.map(x=>`<option value="${x.v??x}">${x.t??x}</option>`).join('')};
+const crs=()=>fill('course',M.courses.filter(c=>!$('teacher').value||c.Teacher===$('teacher').value).map(c=>({v:c.Code,t:`${c.Code} — ${c.Title}`})));
+async function boot(){
+ try{const t=await fetch(API+'?action=teachers').then(r=>r.json());fill('lt',t.teachers||[])}catch(e){toast('Cannot reach server')}
+ if(S_)enter();else $('login').style.display=''}
+async function login(){const r=await post({action:'login',teacher:$('lt').value,pin:$('pin').value});if(r.error)return toast(r.error);
+ S_=r.session;localStorage.setItem('s',S_);$('pin').value='';enter()}
+function logout(q){S_='';localStorage.removeItem('s');D=null;$('app').style.display='none';$('login').style.display='';if(!q)toast('Signed out')}
+async function enter(){
+ try{M=await get({action:'meta'});if(M.error)throw M.error}catch(e){return toast('Load failed: '+e)}
+ $('login').style.display='none';$('app').style.display='';
+ fill('teacher',[M.teacher]);$('teacher').value=M.teacher;$('teacher').disabled=true;crs();
+ ['batch','session','modality'].forEach(k=>fill(k,M[k+'s']));
+ $('date').value=new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
+ $('teacher').onchange=()=>{crs();load()};
+ $('course').onchange=()=>{const c=M.courses.find(x=>x.Code===$('course').value);if(c)$('teacher').value=c.Teacher;load()};
+ ['batch','session','modality'].forEach(k=>$(k).onchange=load);$('date').onchange=sync;
+}
+async function load(){
+ const q={course:$('course').value,batch:$('batch').value,session:$('session').value,modality:$('modality').value};
+ if(Object.values(q).some(v=>!v))return;
+ $('info').textContent='Loading…';D=await get({action:'load',...q});
+ if(D.error)return toast(D.error);
+ const c=D.course;$('info').innerHTML=`<b>${c.Title}</b> · Teacher: ${c.Teacher} · ${c.Program} · ${D.students.length} students · Classes ${D.dates.length}/${D.max}`;
+ sync();
+}
+function sync(){
+ if(!D)return;const d=$('date').value;
+ C=new Set(D.students.filter(s=>(D.att[s.StudentID]||{})[d]===1).map(s=>s.StudentID));
+ $('list').style.display=$('bar').style.display='';draw();sheet();
+}
+function draw(){
+ $('list').innerHTML=D.students.map((s,i)=>`<label class="r"><span>${i+1}</span><div><b>${s.Name}</b><small>${s.StudentID}</small></div><input type="checkbox" ${C.has(s.StudentID)?'checked':''} onchange="tg('${s.StudentID}',this.checked)"></label>`).join('')
+ +`<div class="info" id="cnt"></div>`;cnt();
+}
+const cnt=()=>$('cnt').textContent=`Present: ${C.size} / ${D.students.length}`;
+const tg=(id,v)=>{v?C.add(id):C.delete(id);cnt()};
+const setAll=v=>{C=new Set(v?D.students.map(s=>s.StudentID):[]);draw()};
+async function save(){
+ const b={course:$('course').value,batch:$('batch').value,session:$('session').value,modality:$('modality').value,date:$('date').value,present:[...C],all:D.students.map(s=>s.StudentID)};
+ if(!b.date)return toast('Pick a date');
+ const r=await post(b);if(r.error)return toast(r.error);toast('Saved ✓');
+ const keep=$('date').value;await load();$('date').value=keep;sync();
+}
+function tab(n){$('entry').style.display=n==1?'':'none';$('sbar').style.display=$('sheet').style.display=n==2?'block':'none';
+ $('t1').className=n==1?'on':'';$('t2').className=n==2?'on':'';if(n==2)$('sheet').style.display='block'}
+const fd=s=>s.slice(8)+'/'+s.slice(5,7);
+function sheet(){ // identical layout to the university export: 20 rows/page, 20 date columns
+ const c=D.course,S=D.students,held=D.dates.length,sp=Math.max(1,Math.ceil(S.length/20)),nb=Math.max(1,Math.ceil(held/20)),pages=sp*nb;let h='';
+ for(let q=0;q<pages;q++){const p=Math.floor(q/nb),ds=D.dates.slice(q%nb*20,q%nb*20+20); // 20 date columns per page; more dates continue on following pages
+  h+=`<div class="page"><div class="hd"><div><p><b>Department:</b> ${c.Dept}</p><p><b>Program:</b> ${c.Program}</p><p><b>Semester:</b> ${c.Semester}</p></div>
+  <div class="mid"><img src="logo.png" alt=""><h1>Khulna Khan Bahadur Ahsanullah University</h1><h2>Class Attendance Sheet</h2></div>
+  <div style="padding-left:50px"><p><b>Course Code:</b> ${c.Code}</p><p><b>Course Title:</b> ${c.Title}</p><p><b>Course Teacher:</b> ${c.Teacher}</p><p><b>Enrollment Semester:</b> ${$('session').value}</p></div></div>
+  <table class="t"><colgroup><col width="44"><col width="128"><col width="202">${'<col width="30">'.repeat(20)}<col width="48"><col width="50"><col width="48"><col width="56"></colgroup>
+  <tr><th>SL</th><th style="text-align:left">Student ID</th><th style="text-align:left">Name of the Students</th>${Array.from({length:20},(_,i)=>`<th class="d">${ds[i]?`<span>${fd(ds[i])}</span>`:''}</th>`).join('')}<th>Total Class Held</th><th>Total Present</th><th>Marks out of 10</th><th>Remarks</th></tr>`;
+  for(let i=p*20;i<p*20+20;i++){const s=S[i],a=s?D.att[s.StudentID]||{}:{},pr=Object.values(a).filter(v=>v===1).length;
+   h+=`<tr><td>${i+1}</td><td class="l b">${s?s.StudentID:''}</td><td class="l">${s?s.Name:''}</td>${Array.from({length:20},(_,k)=>`<td>${s&&ds[k]?(a[ds[k]]===1?'P':a[ds[k]]===0?'A':''):''}</td>`).join('')}<td>${s&&held?held:''}</td><td>${s&&held?pr:''}</td><td>${s&&held?Math.round(pr/held*10):''}</td><td></td></tr>`}
+  h+=`</table><div class="ft"><div>Course Teacher</div><div>Dean / Head of the Department</div></div><div class="pg">Page ${q+1} of ${pages}</div></div>`}
+ $('sheet').innerHTML=h;
+}
+boot();
+</script></body></html>
