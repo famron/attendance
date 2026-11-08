@@ -39,7 +39,7 @@ table.t{border-collapse:collapse;width:100%;table-layout:fixed;border:2px solid 
 .page{margin:0;width:100%;padding:0;page-break-after:always;min-height:190mm}.page:last-child{page-break-after:auto}}
 </style></head><body>
 <div class="ui">
-<div id="login" class="card" style="display:none;max-width:420px;margin:15vh auto"><h3 style="margin-top:0">Teacher sign-in</h3><label class="f">Teacher</label><select id="lt"></select><label class="f" style="margin-top:8px">Passcode</label><input type="password" id="pin" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()"><button class="p" style="margin-top:10px" onclick="login()">Sign in</button></div>
+<div id="login" class="card" style="display:none;max-width:420px;margin:15vh auto"><h3 style="margin-top:0">Teacher sign-in</h3><label class="f">Teacher</label><select id="lt"></select><label class="f" style="margin-top:8px">Passcode</label><input type="password" id="pin" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()"><button class="p" style="margin-top:10px" onclick="login()">Sign in</button><div class="info" id="lerr" style="color:#c0392b"></div></div>
 <div id="app" style="display:none">
  <div class="tabs"><button id="t1" class="on" onclick="tab(1)">Take attendance</button><button id="t2" onclick="tab(2)">Sheet / Print</button><button onclick="logout()" style="width:auto">Sign out</button></div>
  <div class="card">
@@ -69,7 +69,9 @@ const toast=t=>{const e=$('toast');e.textContent=t;e.style.display='block';setTi
 const fill=(id,a,txt)=>{$(id).innerHTML='<option value="">Select…</option>'+a.map(x=>`<option value="${x.v??x}">${x.t??x}</option>`).join('')};
 const crs=()=>fill('course',M.courses.filter(c=>!$('teacher').value||c.Teacher===$('teacher').value).map(c=>({v:c.Code,t:`${c.Code} — ${c.Title}`})));
 async function boot(){
- try{const t=await fetch(API+'?action=teachers').then(r=>r.json());fill('lt',t.teachers||[])}catch(e){toast('Cannot reach server')}
+ let t;try{t=await fetch(API+'?action=teachers').then(r=>r.json())}catch(e){t={error:'Cannot reach the web app. Check API in index.html and that the deployment access is "Anyone".'}}
+ if(!t.teachers||!t.teachers.length)$('lerr').textContent=t.error==='unauthorized'?'The deployed backend is the old version. In Apps Script: Deploy > Manage deployments > Edit > Version: New version > Deploy.':t.error||'No teachers found. Put names in column A and passcodes in column B of the Teachers tab.';
+ fill('lt',t.teachers||[]);
  if(S_)enter();else $('login').style.display=''}
 async function login(){const r=await post({action:'login',teacher:$('lt').value,pin:$('pin').value});if(r.error)return toast(r.error);
  S_=r.session;localStorage.setItem('s',S_);$('pin').value='';enter()}
