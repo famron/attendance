@@ -2,6 +2,7 @@
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Class Attendance</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="icon" href="favicon.png" sizes="32x32" type="image/png"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="theme-color" content="#1a7f37">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root{--ac:#1a7f37;--bd:#d6dae0;--z:1}
@@ -16,31 +17,31 @@ button.p{background:var(--ac);color:#fff;border-color:var(--ac)}
 #sheet{padding:10px;overflow-x:auto}
 /* ---- A4 landscape sheet, same layout as the university export ---- */
 .page{zoom:var(--z);width:1123px;height:794px;margin:0 auto 14px;background:#fff;color:#000;padding:30px 36px;font:12.5px Roboto,Arial,sans-serif;position:relative;box-shadow:0 1px 6px #0003}
-.hd{display:grid;grid-template-columns:1fr 1.5fr 1fr;align-items:start;margin-bottom:12px}
-.hd p{margin:0 0 6px}.hd .mid{text-align:center}.hd img{height:46px;float:left;margin:0 8px 0 -10px}
-.hd h1{font-size:18px;margin:6px 0 4px;text-decoration:underline}.hd h2{font-size:15px;margin:0;text-decoration:underline}
-.page select{font:inherit;color:#000;background:#fff;border:1px dashed #8a94a0;border-radius:3px;padding:0 2px;max-width:185px}
+.hd{display:grid;grid-template-columns:225px 1fr 380px;align-items:start;margin-bottom:12px}
+.hd p{margin:0 0 5px}.hd .mid{text-align:center}.hd .L,.hd .R{min-width:0}.tt{display:inline-block;position:relative}.tt img{position:absolute;right:100%;top:50%;transform:translateY(-50%);height:54px;margin-right:12px}.fx{display:flex;align-items:center;gap:4px;white-space:nowrap}.fx>b{flex:none}.fv{white-space:nowrap;overflow:hidden;min-width:0}
+.hd h1{font-size:17px;white-space:nowrap;margin:6px 0 4px;text-decoration:underline}.hd h2{font-size:15px;margin:0;text-decoration:underline}
+.dd{position:relative;display:inline-flex;min-width:48px;max-width:100%;border:1px dashed #8a94a0;border-radius:3px;padding:0 3px;background:#fff;cursor:pointer}.dd:hover,.dd:focus-within{border-color:var(--ac);background:#f2faf4}.dd.empty .fv{color:#8a94a0}.dd select{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:16px}
 table.t{border-collapse:collapse;table-layout:fixed;width:1051px;border:2px solid #000}
-.t th,.t td{border:1px solid #000;height:24px;padding:0;overflow:hidden;white-space:nowrap;text-align:center;font-size:12px}
+.t th,.t td{border:1px solid #000;height:23px;padding:0;overflow:hidden;white-space:nowrap;text-align:center;font-size:12px}
 .t th{height:74px;font-weight:700;white-space:normal;line-height:1.15;font-size:11.5px}
 .t td.l{text-align:left;padding:0 4px}.t td.b{font-weight:700}
-.t th.d{font-size:9px;font-weight:400}.t th.d span{writing-mode:vertical-rl;transform:rotate(180deg);display:block;margin:2px auto}
+.t th.d{font-size:11px;font-weight:500}.t th.d span{writing-mode:vertical-rl;transform:rotate(180deg);display:block;margin:2px auto}
 .x{display:block;width:16px;height:14px;margin:1px auto;padding:0;font-size:10px;line-height:1;border:1px solid #888;border-radius:3px;background:#fff;cursor:pointer}
 .cb{width:15px;height:15px;margin:0;vertical-align:middle;accent-color:var(--ac)}.pm{display:none}
-.ft{display:flex;justify-content:space-between;margin-top:34px;font-weight:700}
+.ft{display:flex;justify-content:space-between;margin-top:24px;font-weight:700}
 .ft div{border-top:2px dashed #000;padding-top:8px;width:245px;text-align:center}
 .pg{position:absolute;bottom:12px;left:0;right:0;text-align:center;font-weight:700;font-size:12px}
 @page{size:A4 landscape;margin:6mm}
 @media print{body{background:#fff}#bar,#toast,#login{display:none!important}#sheet{padding:0;overflow:visible}
-.page{zoom:1;box-shadow:none;margin:0;width:auto;height:188mm;padding:0;page-break-after:always;break-inside:avoid}.page:last-child{page-break-after:auto}
-.cb,.x{display:none!important}.pm{display:inline}.page select{appearance:none;-webkit-appearance:none;border:0;background:none;padding:0}}
+.page{zoom:1;box-shadow:none;margin:0 auto;width:1051px;height:188mm;padding:0;page-break-after:always;break-inside:avoid}.page:last-child{page-break-after:auto}
+.cb,.x{display:none!important}.pm{display:inline}.dd{border:0;padding:0;background:none}.dd select{display:none}.dd.empty .fv{visibility:hidden}.pg{bottom:0}}
 </style></head><body>
 <div id="login" style="display:none"><h3 style="margin-top:0">Teacher sign-in</h3><label class="f">Teacher</label><select id="lt"></select>
 <label class="f">Passcode</label><input type="password" id="pin" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()">
 <button class="p" style="margin-top:10px" onclick="login()">Sign in</button><div class="f" id="lerr" style="color:#c0392b"></div></div>
 <div id="app" style="display:none">
  <div id="bar"><button id="bEdit" onclick="edit()">✎ Edit attendance</button><button id="bUp" class="p" onclick="save()" style="display:none">Update attendance</button><button id="bCan" onclick="cancel()" style="display:none">Cancel</button>
- <span>|</span><input type="date" id="nd"><button onclick="addDate()">+ Add date</button><button onclick="print()">Print / PDF</button><button onclick="logout()">Sign out</button><span id="st"></span></div>
+ <span>|</span><input type="date" id="nd"><button onclick="addDate()">+ Add date</button><button onclick="resetSel()">↺ Reset</button><button onclick="print()">Print / PDF</button><button onclick="logout()">Sign out</button><span id="st"></span></div>
  <div id="sheet"></div></div>
 <div id="toast"></div>
 <script>
@@ -50,41 +51,41 @@ const chk=r=>{if(r.error==='unauthorized'){logout(true);throw 'Session expired'}
 const get=q=>fetch(API+'?'+new URLSearchParams({s:S_,...q})).then(r=>r.json()).then(chk);
 const post=b=>fetch(API,{method:'POST',body:JSON.stringify({s:S_,...b})}).then(r=>r.json()).then(chk);
 const toast=t=>{const e=$('toast');e.textContent=t;e.style.display='block';setTimeout(()=>e.style.display='none',2500)};
-let M,D=null,sel={code:'',modality:'',enr:'',cur:'',batch:''},dates=[],att={},snap='',editing=false,dirty=false;
-const ORDER=['code','modality','enr','cur','batch'],KEYS=ORDER.slice(1);
-const uq=(a,k)=>[...new Set(a.map(x=>x[k]))].filter(Boolean).sort();
-const off=()=>M.courses.filter(c=>c.Code===sel.code);
-const opts=k=>{ // each dropdown only offers values that exist for the choices made before it
- if(k==='code')return uq(M.courses,'Code');let o=off();
- if(k==='modality')return uq(o,'Modality');if(sel.modality)o=o.filter(c=>c.Modality===sel.modality);
- if(k==='enr')return uq(o,'EnrollmentSession');if(sel.enr)o=o.filter(c=>c.EnrollmentSession===sel.enr);
- if(k==='cur')return uq(o,'CurrentSession');const p=o[0]&&o[0].Program;
- return uq(M.cohorts.filter(h=>h.Program===p&&h.Title===(o[0]&&o[0].Title)&&(!sel.modality||h.Modality===sel.modality)&&(!sel.enr||h.EnrollmentSession===sel.enr)),'Batch')};
-const sl=k=>`<select data-k="${k}"><option value="">Select…</option>${opts(k).map(v=>`<option${v===sel[k]?' selected':''}>${v}</option>`).join('')}</select>`;
-const auto=()=>KEYS.forEach(k=>{if(!sel[k]){const o=opts(k);if(o.length===1)sel[k]=o[0]}});
+let M,D=null,H=null,sel={},dates=[],att={},snap='',editing=false,dirty=false;
+const F={code:'Code',title:'Title',modality:'Modality',enr:'EnrollmentSession',cur:'CurrentSession',batch:'Batch'},KEYS=Object.keys(F);
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+const uq=(a,k)=>[...new Set(a.map(x=>x[k]))].filter(Boolean).sort((x,y)=>x.localeCompare(y,undefined,{numeric:true}));
+// Every dropdown is filtered by the choices in all the OTHER dropdowns, so they can be used in any order.
+// A field that has only one possible value left fills itself in; once exactly one course/batch combination remains, the sheet loads.
+const fl=x=>M.cohorts.filter(h=>KEYS.every(k=>k===x||!sel[k]||h[F[k]]===sel[k]));
+const opts=k=>uq(fl(k),F[k]),uv=f=>{const u=uq(fl(),f);return u.length===1?u[0]:''},val=k=>sel[k]||uv(F[k]);
+const dd=k=>{const v=val(k),tt={};if(k==='code')fl(k).forEach(h=>tt[h.Code]=h.Title);
+ return `<label class="dd${v?'':' empty'}"><span class="fv">${esc(v||'Select…')}</span><select data-k="${k}"><option value="">Select…</option>${opts(k).map(o=>`<option value="${esc(o)}"${o===v?' selected':''}>${esc(k==='code'?o+' — '+tt[o]:o)}</option>`).join('')}</select></label>`};
+const hdr=()=>`<div class="hd"><div class="L"><p class="fx"><b>Department:</b><span class="fv">${esc(uv('Dept'))}</span></p><p class="fx"><b>Program:</b><span class="fv">${esc(uv('Program'))}</span></p><p class="fx"><b>Semester:</b>${dd('cur')}</p><p class="fx"><b>Batch:</b>${dd('batch')}<b style="margin-left:6px">Modality:</b>${dd('modality')}</p></div>
+<div class="mid"><div class="tt"><img src="logo.png" alt="KKBAU logo" onerror="this.style.display='none'"><h1>Khulna Khan Bahadur Ahsanullah University</h1><h2>Class Attendance Sheet</h2></div></div>
+<div class="R"><p class="fx"><b>Course Code:</b>${dd('code')}</p><p class="fx"><b>Course Title:</b>${dd('title')}</p><p class="fx"><b>Course Teacher:</b><span class="fv">${esc(M.teacher)}</span></p><p class="fx"><b>Enrollment Semester:</b>${dd('enr')}</p></div></div>`;
+function fitAll(){document.querySelectorAll('.fv').forEach(e=>{e.style.fontSize='';const w=e.clientWidth,s=e.scrollWidth;if(w&&s>w)e.style.fontSize=Math.max(8,12.3*w/s)+'px'})} // long titles shrink to stay on one line
 const fd=s=>s.slice(8)+'/'+s.slice(5,7);
 async function pick(k,v){
  if(editing&&dirty&&!confirm('Discard unsaved changes?'))return render();
- sel[k]=v;ORDER.slice(ORDER.indexOf(k)+1).forEach(x=>sel[x]='');auto();D=null;dates=[];att={};editing=false;dirty=false;
- if(ORDER.every(x=>sel[x]))await load();else render()}
-async function load(){
- const r=await get({action:'load',course:sel.code,batch:sel.batch,modality:sel.modality,enr:sel.enr,cur:sel.cur});
+ sel[k]=v;await resolve()}
+async function resolve(){D=null;H=null;dates=[];att={};editing=false;dirty=false;const r=fl();if(r.length===1)await load(r[0]);else render()}
+function resetSel(){if(editing&&dirty&&!confirm('Discard unsaved changes?'))return;sel={};resolve()}
+async function load(h){
+ const r=await get({action:'load',course:h.Code,batch:h.Batch,modality:h.Modality,enr:h.EnrollmentSession,cur:h.CurrentSession});
  if(r.error){toast(r.error);return render()}
- D=r;dates=[...r.dates];att=JSON.parse(JSON.stringify(r.att));editing=false;dirty=false;render()}
+ H=h;D=r;dates=[...r.dates];att=JSON.parse(JSON.stringify(r.att));editing=false;dirty=false;render()}
 function render(){
- const c=D?D.course:off()[0]||{},S=D?D.students:[],held=dates.length,sp=Math.max(1,Math.ceil(S.length/20)),nb=Math.max(1,Math.ceil(held/20)),pages=sp*nb;let h='';
+ const S=D?D.students:[],held=dates.length,sp=Math.max(1,Math.ceil(S.length/20)),nb=Math.max(1,Math.ceil(held/20)),pages=sp*nb;let h='';const hd=hdr();
  for(let q=0;q<pages;q++){const p=Math.floor(q/nb),ds=dates.slice(q%nb*20,q%nb*20+20); // 20 date columns per page; more dates continue on the next page
-  h+=`<div class="page"><div class="hd"><div><p><b>Department:</b> ${c.Dept||''}</p><p><b>Program:</b> ${c.Program||''}</p><p><b>Semester:</b> ${sl('cur')}</p><p><b>Batch:</b> ${sl('batch')} <b>Modality:</b> ${sl('modality')}</p></div>
-  <div class="mid"><img src="logo.png" alt="" onerror="this.style.display='none'"><h1>Khulna Khan Bahadur Ahsanullah University</h1><h2>Class Attendance Sheet</h2></div>
-  <div style="padding-left:50px"><p><b>Course Code:</b> ${sl('code')}</p><p><b>Course Title:</b> ${c.Title||''}</p><p><b>Course Teacher:</b> ${M.teacher}</p><p><b>Enrollment Semester:</b> ${sl('enr')}</p></div></div>
-  <table class="t"><colgroup><col style="width:38px"><col style="width:120px"><col style="width:175px">${'<col style="width:27px">'.repeat(20)}<col style="width:42px"><col style="width:44px"><col style="width:42px"><col style="width:50px"></colgroup>
+  h+=`<div class="page">${hd}<table class="t"><colgroup><col style="width:38px"><col style="width:120px"><col style="width:175px">${'<col style="width:27px">'.repeat(20)}<col style="width:42px"><col style="width:44px"><col style="width:42px"><col style="width:50px"></colgroup>
   <tr><th>SL</th><th style="text-align:left;padding-left:4px">Student ID</th><th style="text-align:left;padding-left:4px">Name of the Students</th>${Array.from({length:20},(_,i)=>{const d=ds[i];return d?`<th class="d">${editing?`<button class="x" data-rm="${d}" title="Remove this date">✕</button>`:''}<span title="${d}">${fd(d)}</span>${editing?`<button class="x" data-all="${d}" title="Mark all present / clear">☑</button>`:''}</th>`:'<th class="d"></th>'}).join('')}<th>Total Class Held</th><th>Total Present</th><th>Marks out of 10</th><th>Remarks</th></tr>`;
   for(let i=p*20;i<p*20+20;i++){const s=S[i],a=s?att[s.StudentID]||{}:{},pr=dates.filter(d=>a[d]===1).length;
    h+=`<tr data-s="${s?s.StudentID:''}"><td>${i+1}</td><td class="l b">${s?s.StudentID:''}</td><td class="l">${s?s.Name:''}</td>`+Array.from({length:20},(_,k)=>{const d=ds[k];return d&&s?`<td><input type="checkbox" class="cb" data-s="${s.StudentID}" data-d="${d}"${a[d]===1?' checked':''}${editing?'':' disabled'}><span class="pm">${a[d]===1?'P':'A'}</span></td>`:'<td></td>'}).join('')+`<td>${s&&held?held:''}</td><td class="tp">${s&&held?pr:''}</td><td class="tm">${s&&held?Math.round(pr/held*10):''}</td><td></td></tr>`}
   h+=`</table><div class="ft"><div>Course Teacher</div><div>Dean / Head of the Department</div></div><div class="pg">Page ${q+1} of ${pages}</div></div>`}
- $('sheet').innerHTML=h;bar()}
+ $('sheet').innerHTML=h;bar();fitAll()}
 function bar(){$('bEdit').style.display=D&&!editing?'':'none';$('bUp').style.display=$('bCan').style.display=editing?'':'none';
- $('st').textContent=D?`${dates.length}/${D.max} classes · ${D.students.length} students${dirty?' · unsaved changes':''}`:'Choose course, modality, semester and batch in the sheet header'}
+ $('st').textContent=D?`${dates.length}/${D.max} classes · ${D.students.length} students${dirty?' · unsaved changes':''}`:M.cohorts.length?'Pick any header fields in any order; the rest narrow down automatically':'No students found for your courses. Check the Students tab.'}
 $('sheet').addEventListener('change',e=>{const t=e.target;
  if(t.dataset.k)return pick(t.dataset.k,t.value);
  if(t.classList.contains('cb')){const{s,d}=t.dataset;(att[s]=att[s]||{})[d]=t.checked?1:0;dirty=true;t.nextSibling.textContent=t.checked?'P':'A';
@@ -102,8 +103,8 @@ function addDate(){ // a date earlier than existing ones is inserted in order be
  if(!editing){snap=JSON.stringify({dates,att});editing=true}
  dates.push(d);dates.sort();D.students.forEach(s=>(att[s.StudentID]=att[s.StudentID]||{})[d]=0);dirty=true;render()}
 async function save(){const marks={};dates.forEach(d=>marks[d]=D.students.filter(s=>(att[s.StudentID]||{})[d]===1).map(s=>s.StudentID));
- const r=await post({action:'save',course:sel.code,batch:sel.batch,modality:sel.modality,enr:sel.enr,cur:sel.cur,dates,marks});
- if(r.error)return toast(r.error);toast('Attendance updated ✓');await load()}
+ const r=await post({action:'save',course:H.Code,batch:H.Batch,modality:H.Modality,enr:H.EnrollmentSession,cur:H.CurrentSession,dates,marks});
+ if(r.error)return toast(r.error);toast('Attendance updated ✓');await load(H)}
 async function boot(){
  let t;try{t=await fetch(API+'?action=teachers').then(r=>r.json())}catch(e){t={error:'Cannot reach the web app. Check API in index.html and that the deployment access is "Anyone".'}}
  if(!t.teachers||!t.teachers.length)$('lerr').textContent=t.error==='unauthorized'?'The deployed backend is the old version. In Apps Script: Deploy > Manage deployments > Edit > Version: New version > Deploy.':t.error||'No teachers found. Put names in column A and passcodes in column B of the Teachers tab.';
@@ -116,8 +117,8 @@ async function enter(){
  try{M=await get({action:'meta'});if(M.error)throw M.error}catch(e){return toast('Load failed: '+e)}
  $('login').style.display='none';$('app').style.display='';
  $('nd').value=new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
- sel={code:'',modality:'',enr:'',cur:'',batch:''};D=null;dates=[];att={};const cs=opts('code');
- if(cs.length===1)await pick('code',cs[0]);else render()}
+ sel={};await resolve()}
+addEventListener('beforeprint',fitAll);document.fonts&&document.fonts.ready.then(fitAll);
 addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue=''}});
 const fit=()=>document.documentElement.style.setProperty('--z',Math.min(1,(innerWidth-20)/1123));addEventListener('resize',fit);fit();
 boot();
