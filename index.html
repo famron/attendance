@@ -59,7 +59,7 @@ const opts=k=>{ // each dropdown only offers values that exist for the choices m
  if(k==='modality')return uq(o,'Modality');if(sel.modality)o=o.filter(c=>c.Modality===sel.modality);
  if(k==='enr')return uq(o,'EnrollmentSession');if(sel.enr)o=o.filter(c=>c.EnrollmentSession===sel.enr);
  if(k==='cur')return uq(o,'CurrentSession');const p=o[0]&&o[0].Program;
- return uq(M.cohorts.filter(h=>h.Program===p&&(!sel.modality||h.Modality===sel.modality)&&(!sel.enr||h.EnrollmentSession===sel.enr)),'Batch')};
+ return uq(M.cohorts.filter(h=>h.Program===p&&h.Title===(o[0]&&o[0].Title)&&(!sel.modality||h.Modality===sel.modality)&&(!sel.enr||h.EnrollmentSession===sel.enr)),'Batch')};
 const sl=k=>`<select data-k="${k}"><option value="">Select…</option>${opts(k).map(v=>`<option${v===sel[k]?' selected':''}>${v}</option>`).join('')}</select>`;
 const auto=()=>KEYS.forEach(k=>{if(!sel[k]){const o=opts(k);if(o.length===1)sel[k]=o[0]}});
 const fd=s=>s.slice(8)+'/'+s.slice(5,7);
