@@ -57,7 +57,8 @@ const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'
 const uq=(a,k)=>[...new Set(a.map(x=>x[k]))].filter(Boolean).sort((x,y)=>x.localeCompare(y,undefined,{numeric:true}));
 // Every dropdown is filtered by the choices in all the OTHER dropdowns, so they can be used in any order.
 // A field that has only one possible value left fills itself in; once exactly one course/batch combination remains, the sheet loads.
-const fl=x=>M.cohorts.filter(h=>KEYS.every(k=>k===x||!sel[k]||h[F[k]]===sel[k]));
+const CRS=['code','title']; // Course Code and Course Title both identify the course: choosing one must not hide the sibling course (e.g. theory vs Sessional) from the other
+const fl=x=>M.cohorts.filter(h=>KEYS.every(k=>k===x||(CRS.includes(x)&&CRS.includes(k))||!sel[k]||h[F[k]]===sel[k]));
 const opts=k=>uq(fl(k),F[k]),uv=f=>{const u=uq(fl(),f);return u.length===1?u[0]:''},val=k=>sel[k]||uv(F[k]);
 const dd=k=>{const v=val(k),tt={};if(k==='code')fl(k).forEach(h=>tt[h.Code]=h.Title);
  return `<label class="dd${v?'':' empty'}"><span class="fv">${esc(v||'Select…')}</span><select data-k="${k}"><option value="">Select…</option>${opts(k).map(o=>`<option value="${esc(o)}"${o===v?' selected':''}>${esc(k==='code'?o+' — '+tt[o]:o)}</option>`).join('')}</select></label>`};
@@ -68,7 +69,9 @@ function fitAll(){document.querySelectorAll('.fv').forEach(e=>{e.style.fontSize=
 const fd=s=>s.slice(8)+'/'+s.slice(5,7);
 async function pick(k,v){
  if(editing&&dirty&&!confirm('Discard unsaved changes?'))return render();
- sel[k]=v;await resolve()}
+ const prev=sel;sel={};if(v)sel[k]=v; // keep the other choices only while they still match the new one (so switching course never leaves a stale code/title behind)
+ Object.keys(prev).forEach(j=>{if(j!==k&&prev[j]){sel[j]=prev[j];if(!fl().length)delete sel[j]}});
+ await resolve()}
 async function resolve(){D=null;H=null;dates=[];att={};editing=false;dirty=false;const r=fl();if(r.length===1)await load(r[0]);else render()}
 function resetSel(){if(editing&&dirty&&!confirm('Discard unsaved changes?'))return;sel={};resolve()}
 async function load(h){
